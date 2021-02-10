@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Business.Constants;
 
 namespace Business.Concrete
 {
@@ -26,37 +27,40 @@ namespace Business.Concrete
 
             if (product.ProductName.Length<2)
             {
-                return new ErrorResult("Ürün ismi en az 2 karakter olmalıdır.");
+                //Magic strings
+                return new ErrorResult(Messages.ProductNameInvalid);
             }
             _productDal.Add(product);
 
-            return new Result("Ürün Eklendi");
+            return new SuccessResult(Messages.ProductAdded);
         }
 
-        public List<Product> GetAll()
+        public IDataResult<List<Product>> GetAll()
         {
-            //İş kodları
-            //Yetkisi var mı?
+            if (DateTime.Now.Hour==22)
+            {
+                return new ErrorDataResult();
+            }
 
-            return _productDal.GetAll();
+            return new SuccessDataResult<List<Product>>(_productDal.GetAll(),true,"Ürünler listelendi");
         }
 
-        public List<Product> GetAllByCategoryId(int id)
+        public IDataResult<List<Product>> GetAllByCategoryId(int id)
         {
             return _productDal.GetAll(p => p.CategoryId == id);
         }
 
-        public Product GetById(int productId)
+        public IDataResult<List<Product>> GetById(int productId)
         {
             return _productDal.Get(p=> p.ProductId == productId);
         }
 
-        public List<Product> GetByUnitPrice(decimal min, decimal max)
+        public IDataResult<List<Product>> GetByUnitPrice(decimal min, decimal max)
         {
             return _productDal.GetAll(p => p.UnitPrice >= min && p.UnitPrice <= max);
         }
 
-        public List<ProductDetailDto> GetProductDetails()
+        public IDataResult<List<ProductDetailDto>> GetProductDetails()
         {
             return _productDal.GetProductDetails();
         }
