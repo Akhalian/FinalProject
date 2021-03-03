@@ -16,6 +16,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Core.Aspects.Autofac.Caching;
+using Core.Aspects.Autofac.Performance;
+using Core.Aspects.Autofac.Transaction;
 
 namespace Business.Concrete
 {
@@ -33,6 +36,7 @@ namespace Business.Concrete
         //Claim
         [SecuredOperation("product.add,admin")]
         [ValidationAspect(typeof(ProductValidator))]
+        [CacheAspect.CacheRemoveAspect("IProductService.Get")]
         public IResult Add(Product product)
         {
 
@@ -54,7 +58,7 @@ namespace Business.Concrete
 
         }
 
-
+        [CacheAspect]
         public IDataResult<List<Product>> GetAll()
         {
             if (DateTime.Now.Hour == 1)
@@ -70,6 +74,8 @@ namespace Business.Concrete
             return new SuccessDataResult<List<Product>>(_productDal.GetAll(p => p.CategoryId == id));
         }
 
+        [CacheAspect]
+        //[PerformanceAspect(5)]
         public IDataResult<Product> GetById(int productId)
         {
             return new SuccessDataResult<Product>(_productDal.Get(p => p.ProductId == productId));
@@ -90,6 +96,7 @@ namespace Business.Concrete
         }
 
         [ValidationAspect(typeof(ProductValidator))]
+        [CacheAspect.CacheRemoveAspect("IProductService.Get")]
         public IResult Update(Product product)
         {
             var result = _productDal.GetAll(p => p.CategoryId == product.CategoryId).Count;
@@ -98,6 +105,14 @@ namespace Business.Concrete
                 return new ErrorResult(Messages.ProductCountOfCategoryError);
             }
             throw new NotImplementedException();
+        }
+
+        [TransactionScopeAspect]
+        public IResult AddTransactionalTest(Product product)
+        {
+            Add(product);
+            throw new Exception("");
+            Add(product);
         }
 
         private IResult CheckIfProductCountOfCategoryCorrect(int categoryId)
