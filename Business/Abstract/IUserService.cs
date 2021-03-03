@@ -1,7 +1,5 @@
-﻿using System;
+﻿using Core.Entities.Concrete;
 using System.Collections.Generic;
-using System.Text;
-using Core.Entities.Concrete;
 
 namespace Business.Abstract
 {
