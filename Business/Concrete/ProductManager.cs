@@ -34,7 +34,7 @@ namespace Business.Concrete
         }
 
         //Claim
-        [SecuredOperation("product.add,admin")]
+        //[SecuredOperation("product.add,admin")]
         [ValidationAspect(typeof(ProductValidator))]
         [CacheAspect.CacheRemoveAspect("IProductService.Get")]
         public IResult Add(Product product)
@@ -112,7 +112,7 @@ namespace Business.Concrete
         {
             Add(product);
             throw new Exception("");
-            Add(product);
+            //Add(product);
         }
 
         private IResult CheckIfProductCountOfCategoryCorrect(int categoryId)
